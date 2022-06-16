@@ -2852,6 +2852,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
                     return SyntaxKind.MessageKeyword;
                 case "pack_matrix":
                     return SyntaxKind.PackMatrixKeyword;
+                case "__VA_ARGS__":
+                    return SyntaxKind.VariadicArgumentKeyword;
                 case "warning":
                     return SyntaxKind.WarningKeyword;
                 default:
@@ -2879,6 +2881,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
                 case SyntaxKind.DefKeyword:
                 case SyntaxKind.MessageKeyword:
                 case SyntaxKind.PackMatrixKeyword:
+                case SyntaxKind.VariadicArgumentKeyword:
                 case SyntaxKind.WarningKeyword:
                     return true;
 
