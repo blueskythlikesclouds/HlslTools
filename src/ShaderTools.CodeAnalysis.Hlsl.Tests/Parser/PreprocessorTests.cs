@@ -534,17 +534,21 @@ Texture2D MyTex < TEX_COMP_FULL(dxt5, true) >;
             const string text = @"
 #define FOO(value) #value""else""
 string Bar = FOO(some/thing);
+#define FOO2(x, value, y) #value""else""
+string Bar2 = FOO2(2, some 0, 5);
 ";
             var node = Parse(text);
 
             TestRoundTripping(node, text);
             VerifyDirectivesSpecial(node,
-                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "FOO" });
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "FOO" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "FOO2" });
 
-            Assert.Equal(2, node.ChildNodes.Count);
+            Assert.Equal(3, node.ChildNodes.Count);
             Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[0]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[1]).Kind);
 
-            var varDeclStatement = (VariableDeclarationStatementSyntax)node.ChildNodes[0];
+            var varDeclStatement = (VariableDeclarationStatementSyntax) node.ChildNodes[0];
             Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement.Declaration.Type.Kind);
             Assert.Equal(1, ((ScalarTypeSyntax) varDeclStatement.Declaration.Type).TypeTokens.Count);
             Assert.Equal("string", ((ScalarTypeSyntax) varDeclStatement.Declaration.Type).TypeTokens[0].Text);
@@ -553,10 +557,28 @@ string Bar = FOO(some/thing);
             Assert.NotNull(varDeclStatement.Declaration.Variables[0].Initializer);
             Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement.Declaration.Variables[0].Initializer.Kind);
 
-            var initializerExpr = (StringLiteralExpressionSyntax) ((EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer).Value;
+            var equalsValueClause = (EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.StringLiteralExpression, equalsValueClause.Value.Kind);
+            var initializerExpr = (StringLiteralExpressionSyntax) equalsValueClause.Value;
             Assert.Equal(2, initializerExpr.Tokens.Count);
             Assert.Equal("\"some/thing\"", initializerExpr.Tokens[0].Text);
             Assert.Equal("\"else\"", initializerExpr.Tokens[1].Text);
+
+            var varDeclStatement2 = (VariableDeclarationStatementSyntax) node.ChildNodes[1];
+            Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement2.Declaration.Type.Kind);
+            Assert.Equal(1, ((ScalarTypeSyntax) varDeclStatement2.Declaration.Type).TypeTokens.Count);
+            Assert.Equal("string", ((ScalarTypeSyntax) varDeclStatement2.Declaration.Type).TypeTokens[0].Text);
+            Assert.Equal(1, varDeclStatement2.Declaration.Variables.Count);
+            Assert.Equal("Bar2", varDeclStatement2.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement2.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement2.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause2 = (EqualsValueClauseSyntax) varDeclStatement2.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.StringLiteralExpression, equalsValueClause2.Value.Kind);
+            var initializerExpr2 = (StringLiteralExpressionSyntax) equalsValueClause2.Value;
+            Assert.Equal(2, initializerExpr2.Tokens.Count);
+            Assert.Equal("\"some 0\"", initializerExpr2.Tokens[0].Text);
+            Assert.Equal("\"else\"", initializerExpr2.Tokens[1].Text);
         }
 
         [Fact]
