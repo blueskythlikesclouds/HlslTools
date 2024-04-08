@@ -599,8 +599,8 @@ string Bar = STRING(7, Pass, 8);
 
             TestRoundTripping(node, text);
             VerifyDirectivesSpecial(node,
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR" },
                 new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR3" },
-                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR2" },
                 new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR_WTF" },
                 new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "STRING" });
 
@@ -612,15 +612,15 @@ string Bar = STRING(7, Pass, 8);
             Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[4]).Kind);
 
             var varDeclStatement = (VariableDeclarationStatementSyntax) node.ChildNodes[0];
-            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement.Declaration.Type.Kind);
-            Assert.Equal("float", ((VectorTypeSyntax) varDeclStatement.Declaration.Type).TypeToken.Text);
+            Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement.Declaration.Type.Kind);
+            Assert.Equal("float", ((ScalarTypeSyntax) varDeclStatement.Declaration.Type).TypeTokens[0].Text);
             Assert.Equal(1, varDeclStatement.Declaration.Variables.Count);
             Assert.Equal("x", varDeclStatement.Declaration.Variables[0].Identifier.Text);
             Assert.NotNull(varDeclStatement.Declaration.Variables[0].Initializer);
             Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement.Declaration.Variables[0].Initializer.Kind);
 
             var equalsValueClause = (EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer;
-            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause.Value.Kind);
+            Assert.Equal(SyntaxKind.ArrayInitializerExpression, equalsValueClause.Value.Kind);
 
             var varDeclStatement2 = (VariableDeclarationStatementSyntax) node.ChildNodes[1];
             Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement2.Declaration.Type.Kind);
@@ -631,7 +631,7 @@ string Bar = STRING(7, Pass, 8);
             Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement2.Declaration.Variables[0].Initializer.Kind);
 
             var equalsValueClause2 = (EqualsValueClauseSyntax) varDeclStatement2.Declaration.Variables[0].Initializer;
-            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause2.Value.Kind);
+            Assert.Equal(SyntaxKind.ArrayInitializerExpression, equalsValueClause2.Value.Kind);
 
             var varDeclStatement3 = (VariableDeclarationStatementSyntax) node.ChildNodes[2];
             Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement3.Declaration.Type.Kind);
