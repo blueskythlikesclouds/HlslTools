@@ -560,6 +560,96 @@ string Bar = FOO(some/thing);
         }
 
         [Fact]
+        public void TestTokenVariadicOperator()
+        {
+            const string text = @"
+#define CTR(...) = {__VA_ARGS__}
+#define CTR3(x, ...) = float3(x, __VA_ARGS__)
+float x CTR(0.0f);
+float3 y CTR(1.0f, 2.0f, 3.0f);
+float3 z CTR3(4.0f, 5.0f, 6.0f);
+#define CTR_WTF(__VA_ARGS__) = float(__VA_ARGS__)
+float3 w CTR_WTF(0.0f);
+#define STRING(x, ...) #__VA_ARGS__
+string Bar = STRING(7, Pass, 8);
+";
+            var node = Parse(text);
+
+            TestRoundTripping(node, text);
+            VerifyDirectivesSpecial(node,
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR3" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR2" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR_WTF" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "STRING" });
+
+            Assert.Equal(6, node.ChildNodes.Count);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[0]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[1]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[2]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[3]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[4]).Kind);
+
+            var varDeclStatement = (VariableDeclarationStatementSyntax) node.ChildNodes[0];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement.Declaration.Type.Kind);
+            Assert.Equal("float", ((VectorTypeSyntax) varDeclStatement.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement.Declaration.Variables.Count);
+            Assert.Equal("x", varDeclStatement.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause = (EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause.Value.Kind);
+
+            var varDeclStatement2 = (VariableDeclarationStatementSyntax) node.ChildNodes[1];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement2.Declaration.Type.Kind);
+            Assert.Equal("float3", ((VectorTypeSyntax) varDeclStatement2.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement2.Declaration.Variables.Count);
+            Assert.Equal("y", varDeclStatement2.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement2.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement2.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause2 = (EqualsValueClauseSyntax) varDeclStatement2.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause2.Value.Kind);
+
+            var varDeclStatement3 = (VariableDeclarationStatementSyntax) node.ChildNodes[2];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement3.Declaration.Type.Kind);
+            Assert.Equal("float3", ((VectorTypeSyntax) varDeclStatement3.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement3.Declaration.Variables.Count);
+            Assert.Equal("z", varDeclStatement3.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement3.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement3.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause3 = (EqualsValueClauseSyntax) varDeclStatement3.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause3.Value.Kind);
+
+            var varDeclStatement4 = (VariableDeclarationStatementSyntax) node.ChildNodes[3];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement4.Declaration.Type.Kind);
+            Assert.Equal("float3", ((VectorTypeSyntax) varDeclStatement4.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement4.Declaration.Variables.Count);
+            Assert.Equal("w", varDeclStatement4.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement4.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement4.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause4 = (EqualsValueClauseSyntax) varDeclStatement4.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause4.Value.Kind);
+
+            var varDeclStatement5 = (VariableDeclarationStatementSyntax) node.ChildNodes[4];
+            Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement5.Declaration.Type.Kind);
+            Assert.Equal(1, ((ScalarTypeSyntax) varDeclStatement5.Declaration.Type).TypeTokens.Count);
+            Assert.Equal("string", ((ScalarTypeSyntax) varDeclStatement5.Declaration.Type).TypeTokens[0].Text);
+            Assert.Equal(1, varDeclStatement5.Declaration.Variables.Count);
+            Assert.Equal("Bar", varDeclStatement5.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement5.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement5.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause5 = (EqualsValueClauseSyntax) varDeclStatement5.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.StringLiteralExpression, equalsValueClause5.Value.Kind);
+            var initializerExpr5 = (StringLiteralExpressionSyntax) equalsValueClause5.Value;
+            Assert.Equal(1, initializerExpr5.Tokens.Count);
+            Assert.Equal("\"Pass, 8\"", initializerExpr5.Tokens[0].Text);
+        }
+
+        [Fact]
         public void TestMacroBodyContaining2D()
         {
             const string text = @"

@@ -25,7 +25,6 @@
         IncludeNotFound,
         IncludeUnexpectedError,
         NotEnoughMacroParameters,
-        NoVariadicArgumentParameter,
         UnexpectedAttribute,
 
         InvalidExprTerm,
