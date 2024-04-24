@@ -2772,6 +2772,12 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
                 case "true":
                     return SyntaxKind.TrueKeyword;
 
+                case "read":
+                    return SyntaxKind.ReadKeyword;
+                case "write":
+                    return SyntaxKind.WriteKeyword;
+
+
                 default:
                     return SyntaxKind.IdentifierToken;
             }

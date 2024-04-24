@@ -1407,6 +1407,21 @@
     </Field>
   </Node>
 
+    <Node Name="PayloadAccessQualifier" Base="VariableDeclaratorQualifierSyntax">
+        <Kind Name="PayloadAccessQualifier"/>
+        <Field Name="ColonToken" Type="SyntaxToken">
+            <Kind Name="ColonToken"/>
+        </Field>
+        <Field Name="ReadOrWriteKeyword" Type="SyntaxToken"/>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="ShaderStages" Type="SeparatedSyntaxList&lt;SyntaxNode&gt;"/>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <Kind Name="CloseParenToken"/>
+        </Field>
+    </Node>  
+
   <Node Name="ParameterListSyntax" Base="SyntaxNode">
     <TypeComment>
       <summary></summary>
@@ -1872,6 +1887,7 @@
       </PropertyComment>
       <Kind Name="StructKeyword"/>
     </Field>
+    <Field Name="Attributes" Type="List&lt;AttributeDeclarationSyntaxBase&gt;" />
     <Field Name="Name" Type="SyntaxToken">
       <PropertyComment>
         <summary></summary>

@@ -470,6 +470,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
         TrueKeyword,
         FalseKeyword,
 
+        ReadKeyword,
+        WriteKeyword,
+
         // Tokens
         OpenParenToken,
         CloseParenToken,
@@ -601,6 +604,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
         RegisterLocation,
         LogicalRegisterSpace,
         SemanticName,
+        PayloadAccessQualifier,
 
         StateProperty,
 

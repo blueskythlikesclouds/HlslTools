@@ -25,6 +25,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
         {
             var @struct = Match(syntaxKind);
 
+            var attributes = ParseAttributes();
+
             // Name is optional -  but if omitted, this *must* be part of a variable declaration.
             var name = NextTokenIf(SyntaxKind.IdentifierToken);
 
@@ -54,7 +56,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
             var closeBrace = Match(SyntaxKind.CloseBraceToken);
 
-            return new StructTypeSyntax(@struct, name, baseList, openBrace, members, closeBrace);
+            return new StructTypeSyntax(@struct, attributes, name, baseList, openBrace, members, closeBrace);
         }
 
         private InterfaceTypeSyntax ParseInterfaceType()
@@ -425,6 +427,25 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             var closeParen = Match(SyntaxKind.CloseParenToken);
 
             return new PackOffsetLocation(colon, packOffset, openParen, register, componentPart, closeParen);
+        }
+
+        private PayloadAccessQualifier ParsePayloadAccessQualifier()
+        {
+            var colon = Match(SyntaxKind.ColonToken);
+            var readOrWrite = Current.Kind == SyntaxKind.ReadKeyword ? Match(SyntaxKind.ReadKeyword) : Match(SyntaxKind.WriteKeyword);
+            var openParen = Match(SyntaxKind.OpenParenToken);
+
+            var shaderStages = new List<SyntaxNodeBase>();
+            while (Current.Kind != SyntaxKind.CloseParenToken)
+            {
+                shaderStages.Add(Match(SyntaxKind.IdentifierToken));
+                if (Current.Kind != SyntaxKind.CloseParenToken)
+                    shaderStages.Add(Match(SyntaxKind.CommaToken));
+            }
+
+            var closeParen = Match(SyntaxKind.CloseParenToken);
+
+            return new PayloadAccessQualifier(colon, readOrWrite, openParen, new SeparatedSyntaxList<SyntaxNode>(shaderStages), closeParen);
         }
     }
 }

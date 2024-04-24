@@ -167,6 +167,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                     return new BoundRegisterLocation();
                 case SyntaxKind.PackOffsetLocation:
                     return new BoundPackOffsetLocation();
+                case SyntaxKind.PayloadAccessQualifier:
+                    return new BoundPayloadAccessQualifier();
                 default:
                     throw new ArgumentOutOfRangeException(syntax.Kind.ToString());
             }

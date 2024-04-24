@@ -385,6 +385,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             {
                 case SyntaxKind.RegisterKeyword:
                 case SyntaxKind.PackoffsetKeyword:
+                case SyntaxKind.ReadKeyword:
+                case SyntaxKind.WriteKeyword:
                 case SyntaxKind.IdentifierToken:
                 case SyntaxKind.SemiToken:
                     return true;
@@ -402,6 +404,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                     return ParseRegisterLocation();
                 case SyntaxKind.PackoffsetKeyword:
                     return ParsePackOffsetLocation();
+                case SyntaxKind.ReadKeyword:
+                case SyntaxKind.WriteKeyword:
+                    return ParsePayloadAccessQualifier();
                 default:
                     return ParseSemantic();
             }

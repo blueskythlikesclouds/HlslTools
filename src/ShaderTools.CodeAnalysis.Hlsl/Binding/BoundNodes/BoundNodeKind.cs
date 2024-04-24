@@ -73,6 +73,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding.BoundNodes
         Semantic,
         PackOffsetLocation,
         RegisterLocation,
+        PayloadAccessQualifier,
         Attribute,
         ErrorExpression,
         Error

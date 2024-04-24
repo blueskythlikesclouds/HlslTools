@@ -100,6 +100,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Symbols
         public static readonly IntrinsicObjectTypeSymbol BuiltInTriangleIntersectionAttributes;
         public static readonly IntrinsicObjectTypeSymbol RayDesc;
         public static readonly IntrinsicObjectTypeSymbol RaytracingAccelerationStructure;
+        public static readonly IntrinsicObjectTypeSymbol RayQuery;
 
         public static readonly TypeSymbol[] AllTypes;
 
@@ -427,6 +428,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Symbols
             BuiltInTriangleIntersectionAttributes = new IntrinsicObjectTypeSymbol("BuiltInTriangleIntersectionAttributes", "Any hit and closest hit shaders invoked using fixed-function triangle intersection must use this structure for hit attributes.", PredefinedObjectType.BuiltInTriangleIntersectionAttributes);
             RayDesc = new IntrinsicObjectTypeSymbol("RayDesc", "Passed to the TraceRay function to define the origin, direction, and extents of the ray.", PredefinedObjectType.RayDesc);
             RaytracingAccelerationStructure = new IntrinsicObjectTypeSymbol("RaytracingAccelerationStructure", "A resource type that can be declared in HLSL and passed into TraceRay to indicate the top-level acceleration resource built using BuildRaytracingAccelerationStructure.", PredefinedObjectType.RaytracingAccelerationStructure);
+            RayQuery = new IntrinsicObjectTypeSymbol("RayQuery", "RayQuery represents the state of an inline raytracing call into an acceleration structure via member function TraceRayInline().", PredefinedObjectType.RayQuery);
 
             BuiltInTriangleIntersectionAttributes.AddMember(new FieldSymbol("barycentrics", "The Barycentric coordinates of the hit location", BuiltInTriangleIntersectionAttributes, Float2));
 
@@ -441,7 +443,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Symbols
                 .Union(new[] { BlendState, DepthStencilState, RasterizerState })
                 .Union(new[] { GeometryShader, PixelShader, VertexShader })
                 .Union(new[] { ByteAddressBuffer, RWByteAddressBuffer, RasterizerOrderedByteAddressBuffer })
-                .Union(new[] { BuiltInTriangleIntersectionAttributes, RayDesc, RaytracingAccelerationStructure })
+                .Union(new[] { BuiltInTriangleIntersectionAttributes, RayDesc, RaytracingAccelerationStructure, RayQuery })
                 .ToArray();
         }
 
